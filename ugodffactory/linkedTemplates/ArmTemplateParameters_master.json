@@ -1,0 +1,41 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "ugodffactory"
+		},
+		"AzureSqlDatabaseLinkedService_connectionString": {
+			"value": ""
+		},
+		"AzureStorageLinkedService_connectionString": {
+			"value": ""
+		},
+		"SqlServerLinkedService_connectionString": {
+			"value": ""
+		},
+		"SqlServerLinkedService_password": {
+			"value": ""
+		},
+		"SqlServerLinkedService_properties_typeProperties_userName": {
+			"value": "ugoon"
+		},
+		"AzureBlobStorageManagedprivateendPoint_properties_privateLinkResourceId": {
+			"value": "/subscriptions/59eeaea9-322c-4fea-ad62-2faf27b35902/resourceGroups/dwhRg/providers/Microsoft.Storage/storageAccounts/ugostorage"
+		},
+		"AzureBlobStorageManagedprivateendPoint_properties_groupId": {
+			"value": "blob"
+		},
+		"AzureBlobStorageManagedprivateendPoint_properties_fqdns": {
+			"value": [
+				"ugostorage.blob.core.windows.net"
+			]
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
