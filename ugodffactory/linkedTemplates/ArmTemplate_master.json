@@ -7,6 +7,14 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "ugodffactory"
 		},
+		"AzureBlobStorageFileShare_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorageFileShare'"
+		},
+		"AzureFileStorageFileshare_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureFileStorageFileshare'"
+		},
 		"AzureSqlDatabaseLinkedService_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabaseLinkedService'"
@@ -68,6 +76,12 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"AzureBlobStorageFileShare_connectionString": {
+						"value": "[parameters('AzureBlobStorageFileShare_connectionString')]"
+					},
+					"AzureFileStorageFileshare_connectionString": {
+						"value": "[parameters('AzureFileStorageFileshare_connectionString')]"
+					},
 					"AzureSqlDatabaseLinkedService_connectionString": {
 						"value": "[parameters('AzureSqlDatabaseLinkedService_connectionString')]"
 					},
@@ -76,9 +90,6 @@
 					},
 					"SqlServerLinkedService_password": {
 						"value": "[parameters('SqlServerLinkedService_password')]"
-					},
-					"AzureStorageLinkedService_connectionString": {
-						"value": "[parameters('AzureStorageLinkedService_connectionString')]"
 					},
 					"SqlServerLinkedService_properties_typeProperties_userName": {
 						"value": "[parameters('SqlServerLinkedService_properties_typeProperties_userName')]"
@@ -109,11 +120,34 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"AzureStorageLinkedService_connectionString": {
+						"value": "[parameters('AzureStorageLinkedService_connectionString')]"
 					}
 				}
 			},
 			"dependsOn": [
 				"[resourceId('Microsoft.Resources/deployments', 'ugodffactory_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "ugodffactory_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'ugodffactory_ArmTemplate_1')]"
 			]
 		}
 	]

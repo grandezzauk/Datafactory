@@ -5,6 +5,12 @@
 		"factoryName": {
 			"value": "ugodffactory"
 		},
+		"AzureBlobStorageFileShare_connectionString": {
+			"value": ""
+		},
+		"AzureFileStorageFileshare_connectionString": {
+			"value": ""
+		},
 		"AzureSqlDatabaseLinkedService_connectionString": {
 			"value": ""
 		},
