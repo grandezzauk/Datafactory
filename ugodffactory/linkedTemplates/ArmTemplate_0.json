@@ -422,9 +422,6 @@
 					"type": "LinkedServiceReference"
 				},
 				"parameters": {
-					"Directory": {
-						"type": "String"
-					},
 					"filename": {
 						"type": "string"
 					}
@@ -455,14 +452,6 @@
 					"referenceName": "AzureFileStorageFileshare",
 					"type": "LinkedServiceReference"
 				},
-				"parameters": {
-					"Container": {
-						"type": "String"
-					},
-					"Directory": {
-						"type": "String"
-					}
-				},
 				"annotations": [],
 				"type": "Binary",
 				"typeProperties": {
@@ -486,9 +475,6 @@
 					"type": "LinkedServiceReference"
 				},
 				"parameters": {
-					"Container": {
-						"type": "String"
-					},
 					"Directory": {
 						"type": "String"
 					},

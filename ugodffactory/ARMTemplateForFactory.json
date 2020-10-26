@@ -1270,16 +1270,7 @@
 							"dataset": {
 								"referenceName": "RDSDataSourceFolder",
 								"type": "DatasetReference",
-								"parameters": {
-									"Container": {
-										"value": "@pipeline().parameters.SourceStore_Location",
-										"type": "Expression"
-									},
-									"Directory": {
-										"value": "@pipeline().parameters.SourceStore_Directory",
-										"type": "Expression"
-									}
-								}
+								"parameters": {}
 							},
 							"fieldList": [
 								"childItems"
@@ -1352,10 +1343,6 @@
 											"referenceName": "RDSDataSourceFile",
 											"type": "DatasetReference",
 											"parameters": {
-												"Directory": {
-													"value": "@pipeline().parameters.SourceStore_Directory",
-													"type": "Expression"
-												},
 												"filename": {
 													"value": "@item().name",
 													"type": "Expression"
@@ -1368,10 +1355,6 @@
 											"referenceName": "RDSProcessedDestination",
 											"type": "DatasetReference",
 											"parameters": {
-												"Container": {
-													"value": "@pipeline().parameters.DestinationStore_Location",
-													"type": "Expression"
-												},
 												"Directory": {
 													"value": "@pipeline().parameters.DestinationStore_Directory",
 													"type": "Expression"
@@ -1409,10 +1392,6 @@
 											"referenceName": "RDSDataSourceFile",
 											"type": "DatasetReference",
 											"parameters": {
-												"Directory": {
-													"value": "@pipeline().parameters.SourceStore_Directory",
-													"type": "Expression"
-												},
 												"filename": {
 													"value": "@item().name",
 													"type": "Expression"
@@ -1517,6 +1496,52 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/TransformMovies')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Metadata1",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "RDSDataSourceFolder",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureFileStorageReadSettings",
+								"recursive": true
+							},
+							"formatSettings": {
+								"type": "BinaryReadSettings"
+							}
+						}
+					}
+				],
+				"folder": {
+					"name": "Demos"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/RDSDataSourceFolder')]"
 			]
 		},
 		{
@@ -2159,9 +2184,6 @@
 					"type": "LinkedServiceReference"
 				},
 				"parameters": {
-					"Directory": {
-						"type": "String"
-					},
 					"filename": {
 						"type": "string"
 					}
@@ -2192,14 +2214,6 @@
 					"referenceName": "AzureFileStorageFileshare",
 					"type": "LinkedServiceReference"
 				},
-				"parameters": {
-					"Container": {
-						"type": "String"
-					},
-					"Directory": {
-						"type": "String"
-					}
-				},
 				"annotations": [],
 				"type": "Binary",
 				"typeProperties": {
@@ -2223,9 +2237,6 @@
 					"type": "LinkedServiceReference"
 				},
 				"parameters": {
-					"Container": {
-						"type": "String"
-					},
 					"Directory": {
 						"type": "String"
 					},
