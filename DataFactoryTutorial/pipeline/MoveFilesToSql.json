@@ -1,5 +1,5 @@
 {
-	"name": "MoveFiles",
+	"name": "MoveFilesToSql",
 	"properties": {
 		"description": "Move files from one folder to another folder",
 		"activities": [
@@ -18,7 +18,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "BinaryDataSource_Folder",
+						"referenceName": "RDSDataSourceFolder",
 						"type": "DatasetReference",
 						"parameters": {
 							"Container": {
@@ -35,7 +35,7 @@
 						"childItems"
 					],
 					"storeSettings": {
-						"type": "AzureBlobStorageReadSettings",
+						"type": "AzureFileStorageReadSettings",
 						"recursive": true
 					},
 					"formatSettings": {
@@ -80,15 +80,18 @@
 								"source": {
 									"type": "BinarySource",
 									"storeSettings": {
-										"type": "AzureBlobStorageReadSettings",
+										"type": "AzureFileStorageReadSettings",
 										"recursive": true
+									},
+									"formatSettings": {
+										"type": "BinaryReadSettings"
 									},
 									"recursive": false
 								},
 								"sink": {
 									"type": "BinarySink",
 									"storeSettings": {
-										"type": "AzureBlobStorageWriteSettings"
+										"type": "AzureFileStorageWriteSettings"
 									}
 								},
 								"enableStaging": false,
@@ -96,13 +99,9 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "BinaryDataSource_File",
+									"referenceName": "RDSDataSourceFile",
 									"type": "DatasetReference",
 									"parameters": {
-										"Container": {
-											"value": "@pipeline().parameters.SourceStore_Location",
-											"type": "Expression"
-										},
 										"Directory": {
 											"value": "@pipeline().parameters.SourceStore_Directory",
 											"type": "Expression"
@@ -116,7 +115,7 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "BinaryDataDestination",
+									"referenceName": "RDSProcessedDestination",
 									"type": "DatasetReference",
 									"parameters": {
 										"Container": {
@@ -157,13 +156,9 @@
 							"userProperties": [],
 							"typeProperties": {
 								"dataset": {
-									"referenceName": "BinaryDataSource_File",
+									"referenceName": "RDSDataSourceFile",
 									"type": "DatasetReference",
 									"parameters": {
-										"Container": {
-											"value": "@pipeline().parameters.SourceStore_Location",
-											"type": "Expression"
-										},
 										"Directory": {
 											"value": "@pipeline().parameters.SourceStore_Directory",
 											"type": "Expression"
@@ -176,7 +171,7 @@
 								},
 								"enableLogging": false,
 								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
+									"type": "AzureFileStorageReadSettings",
 									"recursive": true
 								}
 							}
@@ -222,9 +217,6 @@
 			"DestinationStore_Directory": {
 				"type": "String"
 			}
-		},
-		"folder": {
-			"name": "Demos"
 		},
 		"annotations": []
 	}
