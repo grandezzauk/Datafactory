@@ -1355,10 +1355,7 @@
 											"referenceName": "RDSProcessedDestination",
 											"type": "DatasetReference",
 											"parameters": {
-												"Directory": {
-													"value": "@pipeline().parameters.DestinationStore_Directory",
-													"type": "Expression"
-												},
+												"Directory": "ProcessedData",
 												"filename": {
 													"value": "@item().name",
 													"type": "Expression"
@@ -1401,7 +1398,7 @@
 										"enableLogging": false,
 										"storeSettings": {
 											"type": "AzureFileStorageReadSettings",
-											"recursive": true
+											"recursive": false
 										}
 									}
 								}
