@@ -6,14 +6,6 @@
 			"referenceName": "AzureFileStorageFileshare",
 			"type": "LinkedServiceReference"
 		},
-		"parameters": {
-			"Container": {
-				"type": "String"
-			},
-			"Directory": {
-				"type": "String"
-			}
-		},
 		"annotations": [],
 		"type": "Binary",
 		"typeProperties": {

@@ -19,17 +19,7 @@
 				"typeProperties": {
 					"dataset": {
 						"referenceName": "RDSDataSourceFolder",
-						"type": "DatasetReference",
-						"parameters": {
-							"Container": {
-								"value": "@pipeline().parameters.SourceStore_Location",
-								"type": "Expression"
-							},
-							"Directory": {
-								"value": "@pipeline().parameters.SourceStore_Directory",
-								"type": "Expression"
-							}
-						}
+						"type": "DatasetReference"
 					},
 					"fieldList": [
 						"childItems"
@@ -102,10 +92,6 @@
 									"referenceName": "RDSDataSourceFile",
 									"type": "DatasetReference",
 									"parameters": {
-										"Directory": {
-											"value": "@pipeline().parameters.SourceStore_Directory",
-											"type": "Expression"
-										},
 										"filename": {
 											"value": "@item().name",
 											"type": "Expression"
@@ -118,10 +104,6 @@
 									"referenceName": "RDSProcessedDestination",
 									"type": "DatasetReference",
 									"parameters": {
-										"Container": {
-											"value": "@pipeline().parameters.DestinationStore_Location",
-											"type": "Expression"
-										},
 										"Directory": {
 											"value": "@pipeline().parameters.DestinationStore_Directory",
 											"type": "Expression"
@@ -159,10 +141,6 @@
 									"referenceName": "RDSDataSourceFile",
 									"type": "DatasetReference",
 									"parameters": {
-										"Directory": {
-											"value": "@pipeline().parameters.SourceStore_Directory",
-											"type": "Expression"
-										},
 										"filename": {
 											"value": "@item().name",
 											"type": "Expression"
