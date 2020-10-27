@@ -24,8 +24,19 @@
 						"computeType": "General"
 					}
 				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": []
 			}
 		],
+		"parameters": {
+			"LoadFileDate": {
+				"type": "string"
+			}
+		},
 		"annotations": []
 	}
 }
