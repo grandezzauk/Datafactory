@@ -10,7 +10,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "20201015_103614_Aircraft_Maintenace_Schedule.txt",
 				"folderPath": "AircraftMaintenanceMain",
 				"fileSystem": "aircraftmaintenance"
 			},
