@@ -5,7 +5,14 @@
 			{
 				"name": "dataflow1",
 				"type": "ExecuteDataFlow",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Set LoadDate",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -26,15 +33,22 @@
 				}
 			},
 			{
-				"name": "Set variable1",
+				"name": "Set LoadDate",
 				"type": "SetVariable",
 				"dependsOn": [],
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "LoadFileDate",
+					"value": {
+						"value": "@utcnow()",
+						"type": "Expression"
+					}
+				}
 			}
 		],
-		"parameters": {
+		"variables": {
 			"LoadFileDate": {
-				"type": "string"
+				"type": "String"
 			}
 		},
 		"annotations": []
