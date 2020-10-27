@@ -913,6 +913,46 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/dataflowCSVTOSQL')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "mainAircraft",
+								"type": "DatasetReference"
+							},
+							"name": "sourceOutput"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTableMaint",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "SelectRenameColums"
+						},
+						{
+							"name": "DerivedColumns"
+						}
+					],
+					"script": "source(output(\n\t\tColumn_1 as string,\n\t\tColumn_2 as string,\n\t\tColumn_3 as string,\n\t\tColumn_4 as string,\n\t\tColumn_5 as string,\n\t\tColumn_6 as string,\n\t\tColumn_7 as string,\n\t\tColumn_8 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> sourceOutput\nsourceOutput select(mapColumn(\n\t\tAC_REG = Column_1,\n\t\tEVE = Column_2,\n\t\tDESC = Column_3,\n\t\tBEGINDAY = Column_4,\n\t\tBEGINTIME = Column_5,\n\t\tENDDAY = Column_6,\n\t\tENDTIME = Column_7,\n\t\tBAS = Column_8\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> SelectRenameColums\nSelectRenameColums derive(BEGINDAY = toTimestamp(substring(BEGINDAY, 1, 4)+'-'+substring(BEGINDAY, 5, 2)+'-'+substring(BEGINDAY, 7,2), 'yyyy-MM-dd'),\n\t\tBEGINTIME = (substring(BEGINTIME,1, 2) + ':' + substring(BEGINTIME,3, 2)),\n\t\tENDDAY = toTimestamp(substring(ENDDAY, 1, 4)+'-'+substring(ENDDAY, 5, 2)+'-'+substring(ENDDAY, 7,2), 'yyyy-MM-dd'),\n\t\tENDTIME = (substring(ENDTIME,1, 2) + ':' + substring(ENDTIME,3, 2))) ~> DerivedColumns\nDerivedColumns sink(allowSchemaDrift: true,\n\tvalidateSchema: true,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tdateFormat:'MM/dd/yyyy',\n\ttimestampFormat:'MM/dd/yyyy HH:mm:ss',\n\tskipDuplicateMapInputs: true) ~> sink1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/mainAircraft')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/IncrementalCopyPipelinem')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1228,66 +1268,6 @@
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/EmployeeFiles')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureStorageLinkedService",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"container": "mycontainer"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "EmpID",
-						"type": "String"
-					},
-					{
-						"name": "Region",
-						"type": "String"
-					},
-					{
-						"name": "Status",
-						"type": "String"
-					},
-					{
-						"name": "Function",
-						"type": "String"
-					},
-					{
-						"name": "Level",
-						"type": "String"
-					},
-					{
-						"name": "Role",
-						"type": "String"
-					},
-					{
-						"name": "StartDate",
-						"type": "String"
-					},
-					{
-						"name": "EndDate",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureStorageLinkedService')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/EmployeeFiles1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {

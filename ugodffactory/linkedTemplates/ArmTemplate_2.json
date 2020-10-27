@@ -13,6 +13,64 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/EmployeeFiles1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureStorageLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "mycontainer"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "EmpID",
+						"type": "String"
+					},
+					{
+						"name": "Region",
+						"type": "String"
+					},
+					{
+						"name": "Status",
+						"type": "String"
+					},
+					{
+						"name": "Function",
+						"type": "String"
+					},
+					{
+						"name": "Level",
+						"type": "String"
+					},
+					{
+						"name": "Role",
+						"type": "String"
+					},
+					{
+						"name": "StartDate",
+						"type": "String"
+					},
+					{
+						"name": "EndDate",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/MoviesDB')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -201,6 +259,71 @@
 						"container": "source"
 					}
 				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dataflow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Set LoadDate",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflowCSVTOSQL",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"sourceOutput": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							}
+						}
+					},
+					{
+						"name": "Set LoadDate",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "LoadFileDate",
+							"value": {
+								"value": "@utcnow()",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"variables": {
+					"LoadFileDate": {
+						"type": "String"
+					}
+				},
+				"annotations": []
 			},
 			"dependsOn": []
 		},
@@ -977,7 +1100,9 @@
 					"script": "source(output(\n\t\tEmpID as string,\n\t\tRegion as string,\n\t\tStatus as string,\n\t\tFunction as string,\n\t\tLevel as string,\n\t\tRole as string,\n\t\tStartDate as string,\n\t\tEndDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tpurgeFiles: true,\n\twildcardPaths:['SampleData/Emps/today/*.csv']) ~> Employees1\nsource(output(\n\t\tEmpID as integer,\n\t\tsurrogatekey as string,\n\t\tRegion as string,\n\t\tStatus as string,\n\t\tEmpFunction as string,\n\t\tLevel as string,\n\t\tRole as string,\n\t\tStartDate as date,\n\t\tEndDate as date,\n\t\tiscurrent as integer,\n\t\tprocesstime as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DimEmployees\nDimEmployees derive(EmpID = toInteger(EmpID)) ~> TypeConversions\nNullFilter derive(EmpID = toInteger(EmpID),\n\t\tStartDate = toDate(StartDate,'MM/dd/yyyy'),\n\t\tEndDate = toDate(EndDate,'MM/dd/yyyy'),\n\t\tprocesstime = currentTimestamp()) ~> TypeConversionsAndSetAttrs\nTypeConversionsAndSetAttrs, TypeConversions lookup(TypeConversionsAndSetAttrs@EmpID == TypeConversions@EmpID,\n\tmultiple: true,\n\tbroadcast: 'auto')~> LookupIDs\nNormNames split(isNull(iscurrent),\n\tdisjoint: false) ~> ConditionalSplit1@(NewRow, CheckForUpdates)\nNameNorm2, TypeConversions exists(NameNorm2@EmpID == TypeConversions@EmpID,\n\tnegate:false,\n\tbroadcast: 'auto')~> checkForChanges\nConditionalSplit1@NewRow derive(iscurrent = 1,\n\t\tsurrogatekey = toString(crc32(EmpID,EmpFunction))) ~> SetAttrsForNew\ncheckForChanges derive(iscurrent = 0) ~> SetAttrsInactive\ncheckForChanges derive(iscurrent = 1) ~> SetAttrsUpdate\nLookupIDs select(mapColumn(\n\t\tEmpID = TypeConversionsAndSetAttrs@EmpID,\n\t\tRegion = Employees1@Region,\n\t\tStatus = Employees1@Status,\n\t\tLevel = Employees1@Level,\n\t\tRole = Employees1@Role,\n\t\tStartDate = TypeConversionsAndSetAttrs@StartDate,\n\t\tEndDate = TypeConversionsAndSetAttrs@EndDate,\n\t\tEmpFunction = Function,\n\t\tiscurrent,\n\t\tprocesstime = TypeConversionsAndSetAttrs@processtime,\n\t\tsurrogatekey\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> NormNames\nSetAttrsInactive select(mapColumn(\n\t\tEmpID,\n\t\tStatus,\n\t\tEndDate,\n\t\tiscurrent,\n\t\tprocesstime\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> InactiveFields\nInactiveFields alterRow(updateIf(true())) ~> AlterRow1\nEmployees1 filter(!isNull(EmpID)) ~> NullFilter\nConditionalSplit1@CheckForUpdates select(mapColumn(\n\t\tEmpID,\n\t\tRegion,\n\t\tStatus,\n\t\tLevel,\n\t\tRole,\n\t\tStartDate,\n\t\tEndDate,\n\t\tEmpFunction,\n\t\tiscurrent,\n\t\tprocesstime,\n\t\tsurrogatekey\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> NameNorm2\nSetAttrsForNew sink(input(\n\t\tEmpID as integer,\n\t\tsurrogatekey as string,\n\t\tRegion as string,\n\t\tStatus as string,\n\t\tEmpFunction as string,\n\t\tLevel as string,\n\t\tRole as string,\n\t\tStartDate as date,\n\t\tEndDate as date,\n\t\tiscurrent as integer,\n\t\tprocesstime as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tbatchSize: 50,\n\tpartitionBy('roundRobin', 4)) ~> sinkNew\nSetAttrsUpdate sink(input(\n\t\tEmpID as integer,\n\t\tsurrogatekey as string,\n\t\tRegion as string,\n\t\tStatus as string,\n\t\tEmpFunction as string,\n\t\tLevel as string,\n\t\tRole as string,\n\t\tStartDate as date,\n\t\tEndDate as date,\n\t\tiscurrent as integer,\n\t\tprocesstime as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tbatchSize: 50,\n\tpartitionBy('roundRobin', 4)) ~> sinkUpdates\nAlterRow1 sink(input(\n\t\tEmpID as integer,\n\t\tsurrogatekey as string,\n\t\tRegion as string,\n\t\tStatus as string,\n\t\tEmpFunction as string,\n\t\tLevel as string,\n\t\tRole as string,\n\t\tStartDate as date,\n\t\tEndDate as date,\n\t\tiscurrent as integer,\n\t\tprocesstime as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['EmpID'],\n\tformat: 'table',\n\tbatchSize: 50,\n\tmapColumn(\n\t\tEmpID,\n\t\tEndDate,\n\t\tiscurrent,\n\t\tprocesstime\n\t),\n\tpartitionBy('roundRobin', 4)) ~> sinkInactive"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/EmployeeFiles1')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/TransformMovies')]",
