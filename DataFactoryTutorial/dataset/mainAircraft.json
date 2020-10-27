@@ -1,0 +1,48 @@
+{
+	"name": "mainAircraft",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorageMaintainance",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "20201015_103614_Aircraft_Maintenace_Schedule.txt",
+				"folderPath": "AircraftMaintenanceMain",
+				"fileSystem": "aircraftmaintenance"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			}
+		]
+	}
+}
