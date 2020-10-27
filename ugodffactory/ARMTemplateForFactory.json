@@ -1614,7 +1614,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"name": "[concat(parameters('factoryName'), '/DataFlowTxtToCSV')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -2856,7 +2856,6 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": "20201015_103614_Aircraft_Maintenace_Schedule.txt",
 						"folderPath": "AircraftMaintenanceMain",
 						"fileSystem": "aircraftmaintenance"
 					},
