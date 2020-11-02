@@ -1,0 +1,18 @@
+{
+	"name": "Binary2",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorageFileShare",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "fff",
+				"container": "sourcefolder"
+			}
+		}
+	}
+}
